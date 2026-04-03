@@ -16,7 +16,7 @@ export async function POST(
     if (action === 'approve') {
       const { error } = await supabaseAdmin
         .from('winners')
-        .update({ status: 'approved' })
+        .update({ verification_status: 'approved', updated_at: new Date().toISOString() })
         .eq('id', winnerId);
 
       if (error) throw error;
@@ -25,7 +25,7 @@ export async function POST(
     } else if (action === 'paid') {
       const { error } = await supabaseAdmin
         .from('winners')
-        .update({ status: 'paid' })
+        .update({ payment_status: 'paid', updated_at: new Date().toISOString() })
         .eq('id', winnerId);
 
       if (error) throw error;

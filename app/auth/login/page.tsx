@@ -31,16 +31,14 @@ export default function LoginPage() {
         return;
       }
 
-      // Store session token
+      // Store session token in localStorage for API calls
       localStorage.setItem('authToken', data.data.session.access_token);
-      // Set cookie for middleware to read
-      document.cookie = `auth-token=${data.data.session.access_token}; path=/; max-age=86400; SameSite=Lax`;
       
-      // Conditional redirect based on role
+      // Cookie is set server-side; use hard navigation so middleware sees it
       if (data.data.role === 'admin') {
-        router.push('/admin');
+        window.location.href = '/admin';
       } else {
-        router.push('/dashboard');
+        window.location.href = '/dashboard';
       }
     } catch (err) {
       setError('An error occurred. Please try again.');

@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
       .eq('id', data.user.id)
       .single()
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       success: true,
       data: {
         user: data.user,
@@ -33,6 +33,16 @@ export async function POST(req: NextRequest) {
         role: userData?.role || 'subscriber',
       },
     })
+
+    // Set auth cookie server-side so middleware can read it on the very first redirect
+    response.cookies.set('auth-token', data.session.access_token, {
+      path: '/',
+      maxAge: 86400,
+      sameSite: 'lax',
+      httpOnly: false,
+    })
+
+    return response
   } catch (err) {
     console.error('Login error:', err)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })

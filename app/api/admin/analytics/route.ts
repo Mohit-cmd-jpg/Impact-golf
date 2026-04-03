@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
 
     // Calculate date range
     const now = new Date();
-    let startDate = new Date();
+    const startDate = new Date();
 
     switch (range) {
       case '7d':
@@ -29,36 +29,56 @@ export async function GET(request: NextRequest) {
         break;
     }
 
-    // Get total users
+    const startISO = startDate.toISOString();
+
+    // Get total users (all time)
     const { count: totalUsersCount } = await supabaseAdmin
       .from('users')
       .select('*', { count: 'exact', head: true });
 
-    // Get total revenue from subscriptions
+    // Get active subscriptions (filtered by date range — created within range)
     const { data: subscriptions } = await supabaseAdmin
       .from('subscriptions')
-      .select('monthly_contribution_amount, plan')
+      .select('monthly_contribution_amount, plan, amount, created_at')
       .eq('status', 'active');
 
+    // Compute total revenue from active subscriptions
     const totalRevenue =
       subscriptions?.reduce((sum, sub) => {
-        const monthlyAmount = sub.monthly_contribution_amount || 0;
-        return sum + (sub.plan === 'yearly' ? monthlyAmount * 12 : monthlyAmount);
+        const amount = Number(sub.amount) || 0;
+        return sum + amount;
       }, 0) || 0;
 
-    // Get total impact from subscription contributions
+    // Compute total charity impact from monthly contributions
     const totalImpact =
       subscriptions?.reduce((sum, sub) => {
-        return sum + (sub.monthly_contribution_amount || 0);
+        return sum + (Number(sub.monthly_contribution_amount) || 0);
       }, 0) || 0;
+
+    // Calculate how many months to show in growth chart
+    let monthsToShow = 12;
+    switch (range) {
+      case '7d':
+        monthsToShow = 3;
+        break;
+      case '30d':
+        monthsToShow = 6;
+        break;
+      case '90d':
+        monthsToShow = 6;
+        break;
+      case '1y':
+        monthsToShow = 12;
+        break;
+    }
 
     // Get monthly growth data
     const monthlyData = [];
-    for (let i = 11; i >= 0; i--) {
+    for (let i = monthsToShow - 1; i >= 0; i--) {
       const monthDate = new Date(now);
       monthDate.setMonth(monthDate.getMonth() - i);
       const monthStart = new Date(monthDate.getFullYear(), monthDate.getMonth(), 1);
-      const monthEnd = new Date(monthDate.getFullYear(), monthDate.getMonth() + 1, 0);
+      const monthEnd = new Date(monthDate.getFullYear(), monthDate.getMonth() + 1, 0, 23, 59, 59);
 
       const { count: monthlyUsers } = await supabaseAdmin
         .from('users')
@@ -66,25 +86,29 @@ export async function GET(request: NextRequest) {
         .gte('created_at', monthStart.toISOString())
         .lte('created_at', monthEnd.toISOString());
 
+      // Calculate revenue for this month from subscriptions created within period
+      const monthRevenue =
+        subscriptions
+          ?.filter((s) => {
+            const d = new Date(s.created_at);
+            return d >= monthStart && d <= monthEnd;
+          })
+          .reduce((sum, sub) => sum + (Number(sub.amount) || 0), 0) || 0;
+
       monthlyData.push({
         month: monthStart.toLocaleDateString('en-US', { month: 'short' }),
         users: monthlyUsers || 0,
-        revenue: 0, // Would calculate from subscriptions in real scenario
+        revenue: monthRevenue,
       });
     }
 
     // Get subscription breakdown
-    const { data: monthlyPlans } = await supabaseAdmin
-      .from('subscriptions')
-      .select('plan')
-      .eq('status', 'active');
-
     const subscriptionBreakdown = {
-      monthly: monthlyPlans?.filter((s) => s.plan === 'monthly').length || 0,
-      yearly: monthlyPlans?.filter((s) => s.plan === 'yearly').length || 0,
+      monthly: subscriptions?.filter((s) => s.plan === 'monthly').length || 0,
+      yearly: subscriptions?.filter((s) => s.plan === 'yearly').length || 0,
     };
 
-    // Get top charities
+    // Get top charities with donation aggregation
     const { data: charities } = await supabaseAdmin
       .from('charities')
       .select('id, name')
@@ -99,29 +123,37 @@ export async function GET(request: NextRequest) {
           .eq('status', 'active');
 
         const totalRaised =
-          charitySubscriptions?.reduce((sum, sub) => sum + (sub.monthly_contribution_amount || 0), 0) || 0;
+          charitySubscriptions?.reduce(
+            (sum, sub) => sum + (Number(sub.monthly_contribution_amount) || 0),
+            0
+          ) || 0;
 
         return {
           name: charity.name,
-          totalRaised: totalRaised * 12, // Annual amount
+          totalRaised: totalRaised * 12, // Annualized
           donors: charitySubscriptions?.length || 0,
         };
       })
     );
 
     // Calculate retention rate (active subscriptions / total users)
+    const totalActive = subscriptionBreakdown.monthly + subscriptionBreakdown.yearly;
     const retentionRate =
-      totalUsersCount && subscriptionBreakdown.monthly + subscriptionBreakdown.yearly > 0
-        ? Math.round(
-            ((subscriptionBreakdown.monthly + subscriptionBreakdown.yearly) / totalUsersCount) * 100
-          )
+      totalUsersCount && totalActive > 0
+        ? Math.round((totalActive / totalUsersCount) * 100)
+        : 0;
+
+    // Average contribution
+    const avgContribution =
+      subscriptions && subscriptions.length > 0
+        ? totalImpact / subscriptions.length
         : 0;
 
     return NextResponse.json({
       totalUsers: totalUsersCount || 0,
       totalRevenue,
       totalImpact,
-      averageCharityContribution: subscriptions ? totalImpact / subscriptions.length : 0,
+      averageCharityContribution: avgContribution,
       monthlyGrowth: monthlyData,
       topCharities: topCharities.sort((a, b) => b.totalRaised - a.totalRaised),
       subscriptionBreakdown,
