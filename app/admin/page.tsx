@@ -36,7 +36,7 @@ export default function AdminPage() {
       </aside>
 
       <main className="flex-1 overflow-y-auto bg-surface-dim hide-scrollbar">
-        <header className="sticky top-0 w-full z-40 bg-[#0e0e0e]/60 backdrop-blur-xl shadow-[0_20px_40px_rgba(0,0,0,0.4)]">
+        <header className="sticky top-0 w-full z-40 bg-[#0e0e0e]/60 backdrop-blur-xl shadow-[0 20px 40px rgba(0,0,0,0.4)]">
           <div className="flex justify-between items-center px-10 py-6 max-w-full">
             <div className="flex flex-col">
               <h1 className="text-2xl font-black text-[#cafd00] tracking-tighter uppercase font-headline">IMPACT GOLF</h1>

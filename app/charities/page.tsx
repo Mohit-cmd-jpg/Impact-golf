@@ -17,7 +17,7 @@ export default function CharitiesPage() {
       <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 py-16 lg:py-24">
         {/* Placeholder for organization grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          <div className="bg-surface-container-low rounded-2xl p-8 border border-white/5 relative overflow-hidden group hover:-translate-y-2 hover:border-[#cafd00]/30 transition-all duration-500 hover:shadow-[0_20px_40px_rgba(202,253,0,0.05)]">
+          <div className="bg-surface-container-low rounded-2xl p-8 border border-white/5 relative overflow-hidden group hover:-translate-y-2 hover:border-[#cafd00]/30 transition-all duration-500 hover:shadow-[0 20px 40px rgba(202,253,0,0.05)]">
             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#cafd00] to-green-500 scale-x-0 origin-left group-hover:scale-x-100 transition-transform duration-500" />
             <div className="w-16 h-16 rounded-xl bg-surface-container-highest mb-8 flex items-center justify-center border border-white/10 group-hover:border-[#cafd00]/50 transition-colors">
               <span className="material-symbols-outlined text-[#cafd00] text-3xl">nature</span>

@@ -1,7 +1,7 @@
 export default function Page() {
   return (
     <div className="bg-surface text-on-surface font-body min-h-screen pb-32">
-      <header className="fixed top-0 w-full z-50 bg-[#0e0e0e]/60 backdrop-blur-xl shadow-[0_20px_40px_rgba(0,0,0,0.4)]">
+      <header className="fixed top-0 w-full z-50 bg-[#0e0e0e]/60 backdrop-blur-xl shadow-[0 20px 40px rgba(0,0,0,0.4)]">
         <div className="flex justify-between items-center px-6 py-4 max-w-7xl mx-auto">
           <div className="flex items-center gap-2">
             <span className="material-symbols-outlined text-[#f3ffca]" style={{fontVariationSettings: "'FILL' 1"}}>water_drop</span>
@@ -31,7 +31,7 @@ export default function Page() {
                  Transform every Stableford point into real-world change. A premium subscription engine connecting the passion of golf with global humanitarian impact.
               </p>
               <div className="flex flex-wrap gap-4 pt-4">
-                  <button className="bg-primary-container text-on-primary-fixed px-8 py-4 rounded-full font-bold text-lg hover:scale-105 active:scale-95 transition-all shadow-[0_0_30px_rgba(202,253,0,0.3)]">Subscribe Now</button>
+                  <button className="bg-primary-container text-on-primary-fixed px-8 py-4 rounded-full font-bold text-lg hover:scale-105 active:scale-95 transition-all shadow-[0 0 30px rgba(202,253,0,0.3)]">Subscribe Now</button>
               </div>
             </div>
             <div className="relative hidden lg:block flex-col gap-6">
@@ -45,8 +45,8 @@ export default function Page() {
           </div>
         </section>
       </main>
-      <nav className="md:hidden fixed bottom-0 left-0 w-full flex justify-around items-end pb-4 px-2 bg-[#0e0e0e]/80 backdrop-blur-2xl rounded-t-[2rem] z-50 border-t border-white/5 shadow-[0_-10px_30px_rgba(0,0,0,0.5)]">
-        <div className="flex flex-col items-center justify-center bg-[#cafd00] text-[#0e0e0e] rounded-full p-3 mb-2 scale-110 shadow-[0_0_15px_#cafd00]">
+      <nav className="md:hidden fixed bottom-0 left-0 w-full flex justify-around items-end pb-4 px-2 bg-[#0e0e0e]/80 backdrop-blur-2xl rounded-t-[2rem] z-50 border-t border-white/5 shadow-[0 -10px 30px rgba(0,0,0,0.5)]">
+        <div className="flex flex-col items-center justify-center bg-[#cafd00] text-[#0e0e0e] rounded-full p-3 mb-2 scale-110 shadow-[0 0 15px #cafd00]">
           <span className="material-symbols-outlined">grid_view</span>
           <span className="font-['Inter'] text-[10px] font-bold uppercase tracking-widest mt-1">Home</span>
         </div>

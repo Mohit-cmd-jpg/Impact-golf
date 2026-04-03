@@ -8,7 +8,7 @@ export default function DrawsPage() {
         <p className="text-on-surface-variant text-sm font-bold tracking-[0.2em] max-w-xl mx-auto uppercase relative z-10 px-4">Watch the live draw, check past results, and see the impact we've made together.</p>
         <div className="mt-12 flex gap-4 relative z-10">
           <button className="bg-surface-container-high border border-white/10 px-8 py-3 rounded-full text-on-surface font-headline font-bold text-xs tracking-widest hover:border-primary-container hover:text-primary-container transition-all uppercase">LIVE DRAW</button>
-          <button className="bg-[#cafd00] text-surface-dim px-8 py-3 rounded-full font-headline font-black text-xs tracking-widest hover:bg-[#d6ff33] transition-all uppercase shadow-[0_0_20px_rgba(202,253,0,0.3)]">PAST RESULTS</button>
+          <button className="bg-[#cafd00] text-surface-dim px-8 py-3 rounded-full font-headline font-black text-xs tracking-widest hover:bg-[#d6ff33] transition-all uppercase shadow-[0 0 20px rgba(202,253,0,0.3)]">PAST RESULTS</button>
         </div>
       </div>
       <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 py-16 lg:py-24 space-y-24">

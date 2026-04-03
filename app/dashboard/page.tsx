@@ -5,7 +5,7 @@ export default function DashboardPage() {
       <div className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 py-10 lg:py-16 grid grid-cols-1 lg:grid-cols-12 gap-10">
         <aside className="lg:col-span-3 h-fit flex flex-col gap-6 sticky top-24">
           <div className="bg-surface-container-low rounded-xl p-6 border border-white/5 relative overflow-hidden group hover:border-[#cafd00]/30 transition-all duration-500">
-            <div className="w-16 h-16 rounded-full bg-gradient-to-tr from-[#cafd00] to-green-500 mb-6 p-0.5 shadow-[0_0_20px_rgba(202,253,0,0.3)] group-hover:shadow-[0_0_40px_rgba(202,253,0,0.5)] transition-shadow">
+            <div className="w-16 h-16 rounded-full bg-gradient-to-tr from-[#cafd00] to-green-500 mb-6 p-0.5 shadow-[0 0 20px rgba(202,253,0,0.3)] group-hover:shadow-[0 0 40px rgba(202,253,0,0.5)] transition-shadow">
               <div className="w-full h-full rounded-full bg-surface-container-highest flex items-center justify-center overflow-hidden border-2 border-[#0e0e0e]">
                 <img alt="User Avatar" className="w-full h-full object-cover grayscale" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBQEpmTOWv7jbp0qWq1JrYmIMlG-3yS8mZ0sJuIoPr9y-vTmwSfwUs8uuloPVMsKbR4poRIKt7R7Ksc1HVcJOCUiXVH7rFzTN1Py0guI3OJSkxuyI7kNydErvAJDcKOx54CR_c0YVjNmVHynle7c8qg9Nf1pOVt_bt7_3A3MI_GO3olHfOKy_zxXn41JpD85bIdt5hNiJC8lm72iV7DRXOiInQ4arnnE4R7Dq9EulK5By9srw0QkDw2p3j5SjCMmtSBFpHgq_5K3r8" />
               </div>

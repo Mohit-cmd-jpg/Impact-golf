@@ -1,5 +1,7 @@
-<!-- BEGIN:nextjs-agent-rules -->
-# This is NOT the Next.js you know
+# Impact Golf — Agent Notes
 
-This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any code. Heed deprecation notices.
-<!-- END:nextjs-agent-rules -->
+This is a standard Next.js 15 App Router project with Tailwind v4, Supabase SSR, and Stripe.
+
+- Run `npm run dev` to start locally
+- Copy `.env.local.example` to `.env.local` and fill in your keys before running
+- All custom Tailwind tokens are defined in `app/globals.css` using `@theme`

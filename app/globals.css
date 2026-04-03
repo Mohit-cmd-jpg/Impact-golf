@@ -1,52 +1,47 @@
-@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
-
 @import "tailwindcss";
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+@theme {
+  --color-bg-primary: #0e0e0e;
+  --color-surface: #0e0e0e;
+  --color-surface-container: #1a1a1a;
+  --color-surface-container-low: #131313;
+  --color-surface-container-high: #20201f;
+  --color-surface-container-highest: #262626;
+  --color-primary-container: #cafd00;
+  --color-primary-fixed: #cafd00;
+  --color-on-primary-fixed: #3a4a00;
+  --color-primary: #f3ffca;
+  --color-on-surface: #ffffff;
+  --color-on-surface-variant: #adaaaa;
+  --color-error: #ff7351;
+  --color-outline-variant: #484847;
+
+  --font-headline: var(--font-manrope), sans-serif;
+  --font-body: var(--font-inter), sans-serif;
+
+  --shadow-neon: 0 0 30px rgba(202, 253, 0, 0.3);
+  --shadow-neon-lg: 0 0 60px rgba(202, 253, 0, 0.4);
+
+  --animate-marquee: marquee 25s linear infinite;
+
+  --background-image-impact-gradient: linear-gradient(45deg, #cafd00, #f3ffca);
 }
 
-html {
-  scroll-behavior: smooth;
+@keyframes marquee {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-50%); }
 }
 
-body {
-  background-color: #0e0e0e;
-  color: #ffffff;
-  font-family: 'Inter', sans-serif;
-  line-height: 1.6;
+@utility text-shadow-neon {
+  text-shadow: 0 0 15px rgba(202, 253, 0, 0.8);
 }
 
-h1, h2, h3, h4, h5, h6 {
-  font-family: 'Manrope', sans-serif;
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  text-transform: uppercase;
+@utility glass-bg {
+  backdrop-filter: blur(12px);
+  background-color: rgba(14, 14, 14, 0.6);
 }
 
-/* Scrollbar styles */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: #131313;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #484847;
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #68655e;
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@utility glass-panel {
+  backdrop-filter: blur(48px);
+  background-color: rgba(38, 38, 38, 0.6);
 }
