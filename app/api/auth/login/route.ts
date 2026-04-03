@@ -18,11 +18,19 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: error.message }, { status: 401 })
     }
 
+    // Fetch role from the users table
+    const { data: userData } = await supabase
+      .from('users')
+      .select('role')
+      .eq('id', data.user.id)
+      .single()
+
     return NextResponse.json({
       success: true,
       data: {
         user: data.user,
         session: data.session,
+        role: userData?.role || 'subscriber',
       },
     })
   } catch (err) {
