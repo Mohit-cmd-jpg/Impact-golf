@@ -4,9 +4,6 @@ import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams as useSearchParamsHook } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowRight, Mail, Lock, User, ChevronRight } from 'lucide-react';
-import { loadStripe } from '@stripe/stripe-js';
-
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || '');
 
 function SignupPageContent() {
   const router = useRouter();
@@ -91,12 +88,12 @@ function SignupPageContent() {
     setStep(4);
   };
 
-  const handlePayment = async () => {
+  const handleFinalize = async () => {
     setLoading(true);
     setError('');
 
     try {
-      // Get auth token from signup
+      // Finalize registration
       const response = await fetch('/api/payments/checkout', {
         method: 'POST',
         headers: {
@@ -113,16 +110,12 @@ function SignupPageContent() {
       const data = await response.json();
 
       if (!response.ok) {
-        setError(data.error || 'Payment setup failed');
+        setError(data.error || 'Finalization failed');
         return;
       }
 
-      const stripe = await stripePromise;
       if (data.data.sessionUrl) {
         window.location.href = data.data.sessionUrl;
-      } else if (stripe && data.data.sessionId) {
-        // Redirect to Stripe Checkout
-        window.location.href = `https://checkout.stripe.com/pay/${data.data.sessionId}`;
       }
     } catch (err) {
       setError('An error occurred. Please try again.');
@@ -351,20 +344,20 @@ function SignupPageContent() {
 
         {step === 4 && (
           <div className="bg-surface-container p-8 rounded-2xl border border-outline-variant">
-            <h2 className="font-headline text-2xl font-bold mb-2">Complete Payment</h2>
+            <h2 className="font-headline text-2xl font-bold mb-2">Review & Confirm</h2>
             <p className="text-on-surface-variant mb-8">Step {step} of 4</p>
 
             <div className="bg-surface-container-high p-6 rounded-lg mb-8 space-y-4">
               <div className="flex justify-between">
-                <span className="text-on-surface-variant">Plan:</span>
+                <span className="text-on-surface-variant">Selected Plan:</span>
                 <span className="font-semibold capitalize">{plan}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-on-surface-variant">Amount:</span>
+                <span className="text-on-surface-variant">Membership Fee:</span>
                 <span className="font-semibold">${plan === 'monthly' ? '29' : '249'}</span>
               </div>
               <div className="border-t border-outline-variant pt-4 flex justify-between">
-                <span className="font-semibold">Total:</span>
+                <span className="font-semibold">Total to Pay:</span>
                 <span className="text-xl font-bold text-primary-container">
                   ${plan === 'monthly' ? '29' : '249'}
                 </span>
@@ -372,15 +365,15 @@ function SignupPageContent() {
             </div>
 
             <button
-              onClick={handlePayment}
+              onClick={handleFinalize}
               disabled={loading}
               className="w-full bg-primary-container text-on-primary-fixed py-3 rounded-lg font-semibold hover:shadow-neon transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
-              {loading ? 'Redirecting to Stripe...' : 'Complete Payment'} <ArrowRight className="w-4 h-4" />
+              {loading ? 'Activating Account...' : 'Confirm & Start Playing'} <ArrowRight className="w-4 h-4" />
             </button>
 
             <p className="text-center text-on-surface-variant text-xs mt-6">
-              Secure payment powered by Stripe
+              By confirming, you agree to our Terms of Service.
             </p>
           </div>
         )}

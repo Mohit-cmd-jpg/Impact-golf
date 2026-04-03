@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { Stripe } from 'stripe'
 import { createServerClient } from '@/lib/supabase'
-import { createClient } from '@supabase/supabase-js'
+
 export async function POST(req: NextRequest) {
   try {
     const { plan, charityId, charityContributionPercent } = await req.json()
@@ -28,113 +27,33 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Check for mock mode (Assessment / Local Dev without Stripe keys)
-    if (!process.env.STRIPE_SECRET_KEY || !process.env.STRIPE_MONTHLY_PRICE_ID) {
-      console.log('Running in MOCK payment mode - NO STRIPE KEYS CONFIGURED')
-      
-      // Auto-activate the user subscription in DB directly since there is no Stripe webhook
-      await supabase
-        .from('users')
-        .update({ subscription_status: 'active' })
-        .eq('id', user.id)
+    console.log(`Finalizing registration for user ${user.id} (Plan: ${plan}, Charity: ${charityId})`)
 
-      const origin = req.headers.get('origin') || process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
-
-      return NextResponse.json({
-        success: true,
-        data: {
-          sessionId: 'mock_session_123',
-          sessionUrl: `${origin}/dashboard?session_id=mock_session_123&mock_payment=true`,
-        },
+    // AUTO-ACTIVATE USER (Bypass Stripe)
+    const { error: dbError } = await supabase
+      .from('users')
+      .update({ 
+        subscription_status: 'active',
+        charity_id: charityId,
+        charity_contribution_percent: charityContributionPercent || 10
       })
+      .eq('id', user.id)
+
+    if (dbError) {
+      return NextResponse.json({ error: `Database Error: ${dbError.message}` }, { status: 500 })
     }
 
-    try {
-      const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
+    const origin = req.headers.get('origin') || process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
 
-      // Get or create Stripe customer
-      let stripeCustomerId: string
-
-      const { data: existingUser } = await supabase
-        .from('users')
-        .select('stripe_customer_id')
-        .eq('id', user.id)
-        .single()
-
-      if (existingUser?.stripe_customer_id) {
-        stripeCustomerId = existingUser.stripe_customer_id
-      } else {
-        const customer = await stripe.customers.create({
-          email: user.email!,
-          name: user.user_metadata?.name || 'Unknown',
-        })
-        stripeCustomerId = customer.id
-
-        // Update user with Stripe customer ID
-        await supabase
-          .from('users')
-          .update({ stripe_customer_id: stripeCustomerId })
-          .eq('id', user.id)
-      }
-
-      // Determine price ID
-      const priceId =
-        plan === 'monthly'
-          ? process.env.STRIPE_MONTHLY_PRICE_ID
-          : process.env.STRIPE_YEARLY_PRICE_ID
-
-      if (!priceId) {
-        throw new Error('Price configuration missing')
-      }
-
-      // Create Stripe checkout session
-      const session = await stripe.checkout.sessions.create({
-        payment_method_types: ['card'],
-        mode: 'subscription',
-        customer: stripeCustomerId,
-        line_items: [
-          {
-            price: priceId,
-            quantity: 1,
-          },
-        ],
-        success_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard?session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/signup?step=3`,
-        metadata: {
-          userId: user.id,
-          charityId: charityId || 'none',
-          charityContributionPercent: charityContributionPercent || 10,
-        },
-      })
-
-      return NextResponse.json({
-        success: true,
-        data: {
-          sessionId: session.id,
-          sessionUrl: session.url,
-        },
-      })
-    } catch (stripeErr: any) {
-      console.error('Stripe error, falling back to mock mode:', stripeErr)
-      
-      // Fallback to mock behavior if Stripe fails (invalid keys, etc)
-      await supabase
-        .from('users')
-        .update({ subscription_status: 'active' })
-        .eq('id', user.id)
-
-      const origin = req.headers.get('origin') || process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
-
-      return NextResponse.json({
-        success: true,
-        data: {
-          sessionId: 'mock_session_fallback',
-          sessionUrl: `${origin}/dashboard?session_id=mock_session_fallback&mock_payment=true`,
-        },
-      })
-    }
-  } catch (err) {
-    console.error('Checkout error:', err)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    return NextResponse.json({
+      success: true,
+      data: {
+        message: 'Registration finalized successfully!',
+        sessionUrl: `${origin}/dashboard?registration=complete`,
+      },
+    })
+  } catch (err: any) {
+    console.error('Finalization error:', err)
+    return NextResponse.json({ error: `Internal server error: ${err.message}` }, { status: 500 })
   }
 }
