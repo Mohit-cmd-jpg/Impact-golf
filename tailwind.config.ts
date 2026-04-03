@@ -25,8 +25,8 @@ const config: Config = {
         'outline-variant': '#484847',
       },
       fontFamily: {
-        'headline': ['Manrope', 'sans-serif'],
-        'body': ['Inter', 'sans-serif'],
+        'headline': ['var(--font-manrope)', 'sans-serif'],
+        'body': ['var(--font-inter)', 'sans-serif'],
       },
       borderRadius: {
         'full': '9999px',
