@@ -9,14 +9,21 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
 
-    // Sign up with Supabase Auth
-    const { data: authData, error: authError } = await supabase.auth.signUp({
+    // Initialize server client with service_role key to bypass email confirmations
+    let serverClient;
+    try {
+      serverClient = createServerClient()
+    } catch (e: any) {
+      return NextResponse.json({ error: `Server Client Error: ${e.message}` }, { status: 500 })
+    }
+
+    // Sign up with Supabase Admin Auth to auto-confirm the email
+    const { data: authData, error: authError } = await serverClient.auth.admin.createUser({
       email,
       password,
-      options: {
-        data: {
-          name,
-        },
+      email_confirm: true,
+      user_metadata: {
+        name,
       },
     })
 
@@ -33,13 +40,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Failed to create user - no user returned from Supabase' }, { status: 400 })
     }
 
-    // Create user record in database
-    let serverClient;
-    try {
-      serverClient = createServerClient()
-    } catch (e: any) {
-      return NextResponse.json({ error: `Server Client Error: ${e.message}` }, { status: 500 })
-    }
+    // admin.createUser creates the account but does not generate a login session.
+    // We log them in immediately using the standard client to get the authToken for Stripe.
+    const { data: signInData } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    })
 
     const { error: dbError } = await serverClient.from('users').insert({
       id: authData.user.id,
@@ -62,8 +68,8 @@ export async function POST(req: NextRequest) {
       success: true,
       data: {
         user: authData.user,
-        session: authData.session,
-        message: 'Signup successful! Please check your email to confirm your account.',
+        session: signInData?.session,
+        message: 'Signup successful! Auto-confirmed via API.',
       },
     })
   } catch (err: any) {
