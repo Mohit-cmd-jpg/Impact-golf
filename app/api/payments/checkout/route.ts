@@ -33,12 +33,7 @@ export async function POST(req: NextRequest) {
       console.log('Running in MOCK payment mode - NO STRIPE KEYS CONFIGURED')
       
       // Auto-activate the user subscription in DB directly since there is no Stripe webhook
-      const supabaseAdmin = createClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.SUPABASE_SERVICE_ROLE_KEY!
-      )
-
-      await supabaseAdmin
+      await supabase
         .from('users')
         .update({ subscription_status: 'active' })
         .eq('id', user.id)
