@@ -225,6 +225,7 @@ export default function HomePage() {
                 </p>
               </div>
             ))}
+            </div>
           </div>
 
           <div className="text-center mt-8">
