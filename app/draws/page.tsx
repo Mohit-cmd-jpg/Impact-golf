@@ -82,7 +82,7 @@ export default function DrawsPage() {
                           (num: number, idx: number) => (
                             <div
                               key={idx}
-                              className="w-20 h-20 rounded-full bg-primary-container text-on-primary-fixed flex items-center justify-center text-4xl font-black shadow-neon"
+                              className="w-20 h-20 rounded-full border-2 border-[#cafd00] bg-[#262626]/60 backdrop-blur-xl text-[#cafd00] flex items-center justify-center text-4xl font-black [box-shadow:0_0_20px_rgba(202,253,0,0.5)] [text-shadow:0_0_15px_#cafd00]"
                             >
                               {num}
                             </div>

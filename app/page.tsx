@@ -109,16 +109,16 @@ export default function HomePage() {
 
           {/* Prize Pool Counter */}
           <div className="grid grid-cols-3 gap-4 max-w-md mx-auto">
-            <div className="bg-surface-container-high p-4 rounded-xl border border-primary-container/20">
-              <div className="text-2xl font-bold text-primary-container">$45K</div>
+            <div className="bg-[#262626]/60 backdrop-blur-xl p-4 rounded-xl border border-primary-container/20">
+              <div className="text-2xl font-bold font-headline text-primary-container [text-shadow:0_0_15px_#cafd00]">$45K</div>
               <div className="text-xs text-on-surface-variant">Prize Pool</div>
             </div>
-            <div className="bg-surface-container-high p-4 rounded-xl border border-primary-container/20">
-              <div className="text-2xl font-bold text-primary-container">12</div>
+            <div className="bg-[#262626]/60 backdrop-blur-xl p-4 rounded-xl border border-primary-container/20">
+              <div className="text-2xl font-bold font-headline text-primary-container [text-shadow:0_0_15px_#cafd00]">12</div>
               <div className="text-xs text-on-surface-variant">Draws/Year</div>
             </div>
-            <div className="bg-surface-container-high p-4 rounded-xl border border-primary-container/20">
-              <div className="text-2xl font-bold text-primary-container">20%</div>
+            <div className="bg-[#262626]/60 backdrop-blur-xl p-4 rounded-xl border border-primary-container/20">
+              <div className="text-2xl font-bold font-headline text-primary-container [text-shadow:0_0_15px_#cafd00]">20%</div>
               <div className="text-xs text-on-surface-variant">To Charities</div>
             </div>
           </div>
@@ -139,14 +139,15 @@ export default function HomePage() {
             {steps.map((step, idx) => (
               <div
                 key={idx}
-                className="relative bg-surface-container p-8 rounded-xl border border-outline-variant hover:border-primary-container transition"
+                className="relative bg-[#262626]/60 backdrop-blur-xl p-8 rounded-xl border border-outline-variant hover:border-primary-container transition group"
               >
-                <div className="text-6xl font-black text-primary-container/20 mb-4">
+                <div className="absolute inset-0 bg-primary-container/0 group-hover:bg-primary-container/5 rounded-xl transition-colors pointer-events-none"></div>
+                <div className="text-6xl font-black text-primary-container/20 mb-4 [text-shadow:0_0_15px_#cafd00]">
                   {step.number}
                 </div>
                 <div className="text-primary-container mb-4">{step.icon}</div>
                 <h4 className="font-headline text-xl font-bold mb-3">{step.title}</h4>
-                <p className="text-on-surface-variant">{step.description}</p>
+                <p className="text-on-surface-variant z-10 relative">{step.description}</p>
 
                 {idx < steps.length - 1 && (
                   <div className="hidden md:block absolute top-1/2 -right-4 w-8 h-0.5 bg-primary-container/30"></div>
@@ -202,15 +203,16 @@ export default function HomePage() {
 
       {/* Charities Scroll */}
       <section id="charities" className="py-20 px-4 bg-surface-container-low">
-        <div className="max-w-6xl mx-auto">
-          <h3 className="font-headline text-4xl font-black mb-12 text-center">OUR IMPACT PARTNERS</h3>
+        <div className="max-w-6xl mx-auto overflow-hidden">
+          <h3 className="font-headline text-4xl font-black mb-12 text-center [text-shadow:0_0_15px_#cafd00] text-primary-container">OUR IMPACT PARTNERS</h3>
 
-          <div className="flex overflow-x-auto gap-6 pb-4">
-            {charities.map((charity) => (
-              <div
-                key={charity.id}
-                className="flex-shrink-0 w-72 bg-surface-container p-6 rounded-xl border border-outline-variant hover:border-primary-container transition cursor-pointer"
-              >
+          <div className="relative w-full overflow-hidden flex">
+            <div className="animate-marquee flex gap-6 pb-4 whitespace-nowrap w-max">
+              {[...charities, ...charities, ...charities].map((charity, index) => (
+                <div
+                  key={`${charity.id}-${index}`}
+                  className="flex-shrink-0 w-72 bg-[#262626]/60 backdrop-blur-xl p-6 rounded-xl border border-outline-variant hover:border-primary-container transition hover:shadow-neon cursor-pointer"
+                >
                 <div className="w-20 h-20 rounded-lg bg-surface-container-high flex items-center justify-center text-4xl mb-4">
                   {charity.img}
                 </div>
