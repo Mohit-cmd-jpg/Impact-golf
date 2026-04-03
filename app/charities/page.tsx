@@ -1,140 +1,37 @@
-'use client';
-
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import { Search, Filter } from 'lucide-react';
 
 export default function CharitiesPage() {
-  const [charities, setCharities] = useState<any[]>([]);
-  const [search, setSearch] = useState('');
-  const [category, setCategory] = useState('all');
-  const [loading, setLoading] = useState(true);
-
-  const categories = ['All Causes', 'Water', 'Education', 'Health', 'Reforestation'];
-
-  useEffect(() => {
-    loadCharities();
-  }, [category]);
-
-  const loadCharities = async () => {
-    try {
-      const categoryParam = category === 'all' ? '' : `?category=${category}`;
-      const response = await fetch(`/api/charities${categoryParam}`);
-      const data = await response.json();
-      setCharities(data.data || []);
-    } catch (err) {
-      console.error('Failed to load charities:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const filtered = charities.filter((c) =>
-    c.name.toLowerCase().includes(search.toLowerCase())
-  );
-
   return (
-    <div className="min-h-screen bg-surface">
-      {/* Header */}
-      <header className="fixed top-0 left-0 right-0 z-50 glass-bg backdrop-blur-xl border-b border-outline-variant">
-        <nav className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="w-10 h-10 bg-primary-container rounded-full flex items-center justify-center">
-              <span className="text-on-primary-fixed font-bold">⛳</span>
-            </div>
-            <h1 className="font-headline text-2xl font-bold">IMPACT GOLF</h1>
-          </Link>
-          <Link
-            href="/dashboard"
-            className="bg-primary-container text-on-primary-fixed px-6 py-2 rounded-full font-semibold hover:shadow-neon transition"
-          >
-            Dashboard
-          </Link>
-        </nav>
-      </header>
-
-      {/* Main */}
-      <div className="pt-24 max-w-7xl mx-auto px-4 pb-20">
-        {/* Hero */}
-        <div className="mb-12 text-center">
-          <h2 className="font-headline text-5xl font-black mb-4">OUR IMPACT PARTNERS</h2>
-          <p className="text-on-surface-variant text-xl max-w-2xl mx-auto">
-            Choose a cause you care about and help drive real impact with every draw participation
-          </p>
-        </div>
-
-        {/* Search & Filter */}
-        <div className="mb-8 space-y-4">
+    <div className="min-h-screen bg-surface flex flex-col pt-16 lg:pt-20">
+      <div className="bg-[#0e0e0e] text-center py-24 lg:py-36 border-b border-white/5 relative overflow-hidden flex flex-col items-center justify-center">
+        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-10 mix-blend-screen" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-primary-container/10 via-transparent to-transparent opacity-60 pointer-events-none" />
+        <h1 className="text-5xl lg:text-7xl font-black uppercase tracking-tighter text-on-surface mb-6 font-headline relative z-10">GLOBAL <span className="text-[#cafd00]">DIRECTORY</span></h1>
+        <p className="text-on-surface-variant text-sm font-bold tracking-[0.2em] max-w-xl mx-auto uppercase relative z-10 px-4">Discover the incredible organizations we support worldwide through your participation.</p>
+        <div className="mt-12 w-full max-w-2xl px-6 relative z-10">
           <div className="relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-on-surface-variant" />
-            <input
-              type="text"
-              placeholder="Search charities..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-surface-container border border-outline-variant rounded-lg py-3 pl-12 pr-4 focus:outline-none focus:border-primary-container transition"
-            />
-          </div>
-
-          {/* Category Chips */}
-          <div className="flex gap-2 overflow-x-auto pb-2">
-            {categories.map((cat) => (
-              <button
-                key={cat}
-                onClick={() => setCategory(cat === 'All Causes' ? 'all' : cat)}
-                className={`px-4 py-2 rounded-full font-semibold whitespace-nowrap transition ${
-                  (cat === 'All Causes' && category === 'all') || cat === category
-                    ? 'bg-primary-container text-on-primary-fixed'
-                    : 'bg-surface-container border border-outline-variant hover:border-primary-container'
-                }`}
-              >
-                {cat}
-              </button>
-            ))}
+            <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant text-xl">search</span>
+            <input className="w-full bg-surface-container-high border-2 border-white/5 rounded-full pl-12 pr-6 py-4 text-sm focus:border-[#cafd00] focus:ring-0 text-on-surface transition-colors placeholder:text-on-surface-variant/50" placeholder="Search by name, cause, or region..." type="text" />
           </div>
         </div>
-
-        {/* Charities Grid */}
-        {loading ? (
-          <div className="text-center text-on-surface-variant">Loading charities...</div>
-        ) : (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
-            {filtered.map((charity) => (
-              <div
-                key={charity.id}
-                className="bg-surface-container p-6 rounded-2xl border border-outline-variant hover:border-primary-container transition group cursor-pointer"
-              >
-                {/* Image Placeholder */}
-                <div className="w-full h-48 bg-gradient-to-br from-blue-600/20 to-cyan-600/20 rounded-xl flex items-center justify-center text-6xl mb-4 group-hover:shadow-neon transition">
-                  💧
-                </div>
-
-                {/* Category Tag */}
-                <div className="inline-block mb-3 px-3 py-1 bg-surface-container-high rounded-full">
-                  <span className="text-primary-container font-semibold text-sm">{charity.category}</span>
-                </div>
-
-                {/* Charity Info */}
-                <h3 className="font-headline text-2xl font-bold mb-3">{charity.name}</h3>
-                <p className="text-on-surface-variant text-sm mb-6 line-clamp-3">
-                  {charity.description}
-                </p>
-
-                {/* Button */}
-                <button className="w-full bg-primary-container text-on-primary-fixed py-2 rounded-lg font-semibold hover:shadow-neon transition">
-                  View Profile
-                </button>
-              </div>
-            ))}
+      </div>
+      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 py-16 lg:py-24">
+        {/* Placeholder for organization grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="bg-surface-container-low rounded-2xl p-8 border border-white/5 relative overflow-hidden group hover:-translate-y-2 hover:border-[#cafd00]/30 transition-all duration-500 hover:shadow-[0_20px_40px_rgba(202,253,0,0.05)]">
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#cafd00] to-green-500 scale-x-0 origin-left group-hover:scale-x-100 transition-transform duration-500" />
+            <div className="w-16 h-16 rounded-xl bg-surface-container-highest mb-8 flex items-center justify-center border border-white/10 group-hover:border-[#cafd00]/50 transition-colors">
+              <span className="material-symbols-outlined text-[#cafd00] text-3xl">nature</span>
+            </div>
+            <span className="inline-block px-3 py-1 bg-[#cafd00]/10 text-[#cafd00] text-[10px] font-black tracking-widest uppercase mb-4 rounded border border-[#cafd00]/20">ENVIRONMENT</span>
+            <h2 className="text-2xl font-black font-headline text-on-surface uppercase tracking-tight mb-4 group-hover:text-[#cafd00] transition-colors">Earth Rebalance Initiative</h2>
+            <p className="text-on-surface-variant text-sm leading-relaxed mb-8">Focusing on massive reforestation projects and ocean cleanups globally. Every ticket sold plants 5 trees in critical areas.</p>
+            <div className="pt-6 border-t border-white/5 flex items-center justify-between">
+              <span className="text-xs font-bold text-on-surface-variant uppercase tracking-widest">Global Reach</span>
+              <span className="material-symbols-outlined text-surface-container-highest group-hover:text-[#cafd00] transition-colors group-hover:translate-x-1">arrow_forward</span>
+            </div>
           </div>
-        )}
-
-        {filtered.length === 0 && !loading && (
-          <div className="text-center py-12">
-            <p className="text-on-surface-variant text-lg">No charities found matching your search</p>
-          </div>
-        )}
+        </div>
       </div>
     </div>
-  );
+  )
 }

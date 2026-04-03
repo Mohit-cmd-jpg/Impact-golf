@@ -1,275 +1,51 @@
-'use client';
-
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { TrendingUp, Trophy, Gift, Clock, LogOut } from 'lucide-react';
 
 export default function DashboardPage() {
-  const router = useRouter();
-  const [user, setUser] = useState<any>(null);
-  const [scores, setScores] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [newScore, setNewScore] = useState('');
-  const [scoreDate, setScoreDate] = useState('');
-
-  useEffect(() => {
-    const token = localStorage.getItem('authToken');
-    if (!token) {
-      router.push('/auth/login');
-      return;
-    }
-
-    loadUserData(token);
-  }, []);
-
-  const loadUserData = async (token: string) => {
-    try {
-      const profileRes = await fetch('/api/user/profile', {
-        headers: { 'Authorization': `Bearer ${token}` },
-      });
-
-      const scoresRes = await fetch('/api/scores', {
-        headers: { 'Authorization': `Bearer ${token}` },
-      });
-
-      if (profileRes.ok && scoresRes.ok) {
-        const userData = await profileRes.json();
-        const scoresData = await scoresRes.json();
-        setUser(userData.data);
-        setScores(scoresData.data || []);
-      }
-    } catch (err) {
-      console.error('Failed to load data:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleAddScore = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const token = localStorage.getItem('authToken');
-
-    if (!token || !newScore || !scoreDate) return;
-
-    try {
-      const response = await fetch('/api/scores', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          score: parseInt(newScore),
-          datePlayed: scoreDate,
-        }),
-      });
-
-      if (response.ok) {
-        setNewScore('');
-        setScoreDate('');
-        loadUserData(token);
-      }
-    } catch (err) {
-      console.error('Failed to add score:', err);
-    }
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem('authToken');
-    router.push('/');
-  };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-surface flex items-center justify-center">
-        <div className="text-on-surface-variant">Loading...</div>
-      </div>
-    );
-  }
-
   return (
-    <div className="min-h-screen bg-surface">
-      {/* Header */}
-      <header className="fixed top-0 left-0 right-0 z-50 glass-bg backdrop-blur-xl border-b border-outline-variant">
-        <nav className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-10 h-10 bg-primary-container rounded-full flex items-center justify-center">
-              <span className="text-on-primary-fixed font-bold">⛳</span>
-            </div>
-            <h1 className="font-headline text-2xl font-bold tracking-tight">IMPACT GOLF</h1>
-          </div>
-          <div className="flex items-center gap-4">
-            <Link href="/charities" className="text-on-surface-variant hover:text-on-surface transition">
-              Charities
-            </Link>
-            <Link href="/draws" className="text-on-surface-variant hover:text-on-surface transition">
-              Draws
-            </Link>
-            <button
-              onClick={handleLogout}
-              className="text-on-surface hover:text-error transition flex items-center gap-2"
-            >
-              <LogOut className="w-5 h-5" /> Sign Out
-            </button>
-          </div>
-        </nav>
-      </header>
-
-      {/* Main Content */}
-      <div className="pt-24 max-w-7xl mx-auto px-4 pb-20">
-        {/* Welcome Hero */}
-        <div className="mb-12">
-          <h2 className="font-headline text-5xl font-black mb-4">
-            Welcome back, {user?.name}! 🎉
-          </h2>
-          <p className="text-on-surface-variant text-lg">
-            Next draw in {Math.floor(Math.random() * 28) + 1} days
-          </p>
-        </div>
-
-        <div className="grid md:grid-cols-3 gap-6 mb-12">
-          {/* Subscription Status */}
-          <div className="bg-surface-container p-6 rounded-xl border border-outline-variant">
-            <div className="flex items-start justify-between mb-4">
-              <h3 className="font-headline font-bold">Subscription</h3>
-              <div className="w-10 h-10 bg-primary-container rounded-full flex items-center justify-center">
-                <Gift className="w-5 h-5 text-on-primary-fixed" />
+    <div className="min-h-screen bg-surface flex flex-col pt-16 lg:pt-20">
+      <div className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 py-10 lg:py-16 grid grid-cols-1 lg:grid-cols-12 gap-10">
+        <aside className="lg:col-span-3 h-fit flex flex-col gap-6 sticky top-24">
+          <div className="bg-surface-container-low rounded-xl p-6 border border-white/5 relative overflow-hidden group hover:border-[#cafd00]/30 transition-all duration-500">
+            <div className="w-16 h-16 rounded-full bg-gradient-to-tr from-[#cafd00] to-green-500 mb-6 p-0.5 shadow-[0_0_20px_rgba(202,253,0,0.3)] group-hover:shadow-[0_0_40px_rgba(202,253,0,0.5)] transition-shadow">
+              <div className="w-full h-full rounded-full bg-surface-container-highest flex items-center justify-center overflow-hidden border-2 border-[#0e0e0e]">
+                <img alt="User Avatar" className="w-full h-full object-cover grayscale" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBQEpmTOWv7jbp0qWq1JrYmIMlG-3yS8mZ0sJuIoPr9y-vTmwSfwUs8uuloPVMsKbR4poRIKt7R7Ksc1HVcJOCUiXVH7rFzTN1Py0guI3OJSkxuyI7kNydErvAJDcKOx54CR_c0YVjNmVHynle7c8qg9Nf1pOVt_bt7_3A3MI_GO3olHfOKy_zxXn41JpD85bIdt5hNiJC8lm72iV7DRXOiInQ4arnnE4R7Dq9EulK5By9srw0QkDw2p3j5SjCMmtSBFpHgq_5K3r8" />
               </div>
             </div>
-            <div className="text-2xl font-bold mb-2 capitalize">{user?.subscription_plan || 'No Plan'}</div>
-            <div
-              className={`inline-block px-3 py-1 rounded-full text-sm font-semibold ${
-                user?.subscription_status === 'active'
-                  ? 'bg-green-500/20 text-green-400'
-                  : 'bg-error/20 text-error'
-              }`}
-            >
-              {user?.subscription_status || 'Inactive'}
-            </div>
-            <button className="mt-4 text-primary-container font-semibold hover:text-primary transition">
-              Manage →
-            </button>
-          </div>
-
-          {/* Scores Status */}
-          <div className="bg-surface-container p-6 rounded-xl border border-outline-variant">
-            <div className="flex items-start justify-between mb-4">
-              <h3 className="font-headline font-bold">Golf Scores</h3>
-              <div className="w-10 h-10 bg-primary-container rounded-full flex items-center justify-center">
-                <TrendingUp className="w-5 h-5 text-on-primary-fixed" />
-              </div>
-            </div>
-            <div className="text-2xl font-bold mb-2">{scores.length}/5</div>
-            <p className="text-on-surface-variant text-sm mb-4">
-              {scores.length === 5
-                ? 'Ready for draws!'
-                : `${5 - scores.length} more scores needed`}
-            </p>
-            <button className="text-primary-container font-semibold hover:text-primary transition">
-              View Scores →
-            </button>
-          </div>
-
-          {/* Winnings */}
-          <div className="bg-surface-container p-6 rounded-xl border border-outline-variant">
-            <div className="flex items-start justify-between mb-4">
-              <h3 className="font-headline font-bold">Winnings</h3>
-              <div className="w-10 h-10 bg-primary-container rounded-full flex items-center justify-center">
-                <Trophy className="w-5 h-5 text-on-primary-fixed" />
-              </div>
-            </div>
-            <div className="text-2xl font-bold text-primary-container mb-2">$0.00</div>
-            <p className="text-on-surface-variant text-sm">Total prize money won</p>
-          </div>
-        </div>
-
-        {/* Add Score Section */}
-        <div className="grid md:grid-cols-2 gap-8">
-          {/* Score Entry Form */}
-          <div className="bg-surface-container p-8 rounded-xl border border-outline-variant">
-            <h3 className="font-headline text-2xl font-bold mb-6">Add Your Score</h3>
-
-            <form onSubmit={handleAddScore} className="space-y-5">
-              <div>
-                <label className="block text-sm font-semibold mb-2">Score (1-45)</label>
-                <input
-                  type="number"
-                  min="1"
-                  max="45"
-                  value={newScore}
-                  onChange={(e) => setNewScore(e.target.value)}
-                  placeholder="Enter your score"
-                  className="w-full bg-surface-container-high border border-outline-variant rounded-lg py-3 px-4 focus:outline-none focus:border-primary-container transition"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold mb-2">Date Played</label>
-                <input
-                  type="date"
-                  value={scoreDate}
-                  onChange={(e) => setScoreDate(e.target.value)}
-                  className="w-full bg-surface-container-high border border-outline-variant rounded-lg py-3 px-4 focus:outline-none focus:border-primary-container transition"
-                  required
-                />
-              </div>
-
-              <button
-                type="submit"
-                className="w-full bg-primary-container text-on-primary-fixed py-3 rounded-lg font-semibold hover:shadow-neon transition"
-              >
-                Post Score
+            <h2 className="font-headline font-black text-xl text-on-surface uppercase tracking-tight mb-1">Alex Mercer</h2>
+            <p className="text-xs text-on-surface-variant font-bold tracking-[0.2em] mb-8">FOUNDING MEMBER</p>
+            <nav className="flex flex-col gap-2">
+              <a className="flex items-center gap-4 px-4 py-3 rounded-md bg-[#cafd00]/10 text-[#cafd00] font-headline font-bold text-sm tracking-widest border border-[#cafd00]/20" href="#">
+                <span className="material-symbols-outlined" style={{fontVariationSettings: "'FILL' 1"}}>dashboard</span> OVERVIEW
+              </a>
+              <a className="flex items-center gap-4 px-4 py-3 rounded-md text-on-surface hover:bg-white/5 font-headline font-bold text-sm tracking-widest transition-colors" href="#">
+                <span className="material-symbols-outlined shrink-0" style={{fontVariationSettings: "'FILL' 0"}}>history</span> TICKET HISTORY
+              </a>
+              <a className="flex items-center gap-4 px-4 py-3 rounded-md text-on-surface hover:bg-white/5 font-headline font-bold text-sm tracking-widest transition-colors" href="#">
+                <span className="material-symbols-outlined shrink-0" style={{fontVariationSettings: "'FILL' 0"}}>settings</span> SETTINGS
+              </a>
+              <button className="flex items-center gap-4 px-4 py-3 mt-6 rounded-md text-error-dim hover:text-error hover:bg-error-container/10 font-headline font-bold text-sm tracking-widest transition-colors w-full text-left">
+                <span className="material-symbols-outlined shrink-0">logout</span> LOGOUT
               </button>
-            </form>
+            </nav>
+            <div className="absolute top-0 right-0 w-32 h-32 bg-[#cafd00]/10 rounded-full blur-3xl -z-10 group-hover:bg-[#cafd00]/20 transition-all duration-700" />
           </div>
-
-          {/* Scores History */}
-          <div className="bg-surface-container p-8 rounded-xl border border-outline-variant">
-            <h3 className="font-headline text-2xl font-bold mb-6">Recent Scores</h3>
-
-            <div className="space-y-3 max-h-96 overflow-y-auto">
-              {scores.length > 0 ? (
-                scores.map((score) => (
-                  <div
-                    key={score.id}
-                    className="flex items-center justify-between p-4 bg-surface-container-high rounded-lg"
-                  >
-                    <div>
-                      <div className="font-semibold">{score.score} Points</div>
-                      <div className="text-sm text-on-surface-variant">
-                        {new Date(score.date_played).toLocaleDateString()}
-                      </div>
-                    </div>
-                    <div className="text-primary-container font-bold text-lg">{score.score}</div>
-                  </div>
-                ))
-              ) : (
-                <p className="text-on-surface-variant">No scores yet. Add your first score above!</p>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Charity Section */}
-        {user?.charity && (
-          <div className="mt-12 bg-surface-container p-8 rounded-xl border border-outline-variant">
-            <h3 className="font-headline text-2xl font-bold mb-6">Your Impact</h3>
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="text-4xl mb-2">{user.charity.name}</div>
-                <div className="text-on-surface-variant mb-4">
-                  {user.charity_contribution_percent}% of your winnings support this cause
-                </div>
-              </div>
-              <button className="bg-primary-container text-on-primary-fixed px-6 py-3 rounded-full font-semibold hover:shadow-neon transition">
-                Change Charity
+        </aside>
+        
+        <main className="lg:col-span-9 flex flex-col gap-10">
+          <div className="bg-surface-container-high rounded-2xl p-8 lg:p-12 border border-white/10 relative overflow-hidden flex flex-col justify-end min-h-[300px] border-l-4 border-l-[#cafd00]">
+            <div className="absolute inset-0 bg-gradient-to-r from-[#0e0e0e]/90 to-transparent z-10" />
+            <img alt="Hero background" className="absolute inset-0 w-full h-full object-cover opacity-30 grayscale mix-blend-overlay" src="https://images.unsplash.com/photo-1587329310686-91414b8e3cb7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1742&q=80" />
+            <div className="absolute right-0 top-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary-container/20 rounded-full blur-[120px] mix-blend-screen opacity-50" />
+            <div className="relative z-20 max-w-xl">
+              <span className="inline-block px-3 py-1 bg-surface-container-highest text-primary-fixed text-[10px] font-black tracking-widest uppercase mb-4 rounded border border-white/10">Next Draw: MAY 15</span>
+              <h1 className="text-4xl lg:text-5xl font-extrabold font-headline uppercase tracking-tighter text-on-surface mb-4 leading-none hidden lg:block">READY FOR<br/><span className="text-[#cafd00]">IMPACT.</span></h1>
+              <p className="text-on-surface-variant text-sm max-w-md font-medium leading-relaxed mb-8">You have 3 active tickets for the upcoming Major Draw. Support global charities while standing a chance to win exclusive golf experiences.</p>
+              <button className="bg-[#cafd00] hover:bg-[#d6ff33] text-surface-dim px-8 py-3 rounded text-sm font-black font-headline tracking-widest transition-colors uppercase flex items-center w-max">
+                Get More Tickets <span className="material-symbols-outlined ml-2 text-lg">arrow_forward</span>
               </button>
             </div>
           </div>
-        )}
+        </main>
       </div>
     </div>
-  );
+  )
 }
