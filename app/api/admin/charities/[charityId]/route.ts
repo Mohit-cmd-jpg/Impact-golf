@@ -8,10 +8,10 @@ const supabaseAdmin = createClient(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { charityId: string } }
+  { params }: { params: Promise<{ charityId: string }> }
 ) {
   try {
-    const charityId = params.charityId;
+    const { charityId } = await params;
 
     const { error } = await supabaseAdmin.from('charities').delete().eq('id', charityId);
 

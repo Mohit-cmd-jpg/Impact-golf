@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import {
   BarChart3,
@@ -18,6 +19,16 @@ import {
 } from 'lucide-react';
 
 export default function AdminDashboard() {
+  const pathname = usePathname();
+  
+  // Determine active tab from pathname
+  let activeTab = 'overview';
+  if (pathname.includes('/admin/users')) activeTab = 'users';
+  else if (pathname.includes('/admin/draws')) activeTab = 'draws';
+  else if (pathname.includes('/admin/charities')) activeTab = 'charities';
+  else if (pathname.includes('/admin/winners')) activeTab = 'winners';
+  else if (pathname.includes('/admin/analytics')) activeTab = 'analytics';
+  
   const navigationItems = [
     { id: 'overview', label: 'Overview', icon: BarChart3 },
     { id: 'users', label: 'Users', icon: Users },

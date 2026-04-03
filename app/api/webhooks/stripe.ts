@@ -2,9 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { Stripe } from 'stripe'
 import { createServerClient } from '@/lib/supabase'
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
-  apiVersion: '2024-04-10',
-})
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '')
 
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET
 
@@ -37,7 +35,7 @@ export async function POST(req: NextRequest) {
 
         // Get the customer's email
         const customer = await stripe.customers.retrieve(customerId)
-        const email = customer.email
+        const email = 'deleted' in customer ? null : customer.email
 
         if (email) {
           const { data: user } = await supabase
@@ -53,7 +51,8 @@ export async function POST(req: NextRequest) {
             const plan = priceId === process.env.STRIPE_MONTHLY_PRICE_ID ? 'monthly' : 'yearly'
 
             // Update subscription status in database
-            const renewalDate = new Date(subscription.current_period_end * 1000)
+            const currentPeriodEnd = (subscription as any).current_period_end
+            const renewalDate = new Date(currentPeriodEnd * 1000)
 
             await supabase
               .from('users')
@@ -90,7 +89,7 @@ export async function POST(req: NextRequest) {
 
         // Get the customer's email
         const customer = await stripe.customers.retrieve(customerId)
-        const email = customer.email
+        const email = 'deleted' in customer ? null : customer.email
 
         if (email) {
           const { data: user } = await supabase
@@ -125,7 +124,7 @@ export async function POST(req: NextRequest) {
 
         // Get the customer's email
         const customer = await stripe.customers.retrieve(customerId)
-        const email = customer.email
+        const email = 'deleted' in customer ? null : customer.email
 
         if (email) {
           const { data: user } = await supabase

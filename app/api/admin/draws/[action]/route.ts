@@ -22,13 +22,13 @@ function matchScores(userScores: number[], winningNumbers: number[]): number {
 
 export async function POST(
   request: NextRequest,
-  { params }: { params?: { drawId?: string } } = {}
+  { params }: { params: Promise<{ action: string }> }
 ) {
   try {
+    const { action } = await params;
     const body = await request.json().catch(() => ({}));
-    const path = request.nextUrl.pathname;
 
-    if (path.includes('/simulate')) {
+    if (action === 'simulate') {
       // Run simulation - generate new draw
       const winningNumbers = generateWinningNumbers();
 
@@ -88,9 +88,9 @@ export async function POST(
       if (updateError) throw updateError;
 
       return NextResponse.json({ success: true, drawId, winningNumbers });
-    } else if (path.includes('/publish')) {
+    } else if (action === 'publish') {
       // Publish draw results - match winners
-      const drawId = params?.drawId;
+      const drawId = body?.drawId;
 
       if (!drawId) {
         return NextResponse.json({ error: 'Draw ID required' }, { status: 400 });

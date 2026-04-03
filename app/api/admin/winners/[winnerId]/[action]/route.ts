@@ -8,10 +8,10 @@ const supabaseAdmin = createClient(
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { winnerId: string; action: string } }
+  { params }: { params: Promise<{ winnerId: string; action: string }> }
 ) {
   try {
-    const { winnerId, action } = params;
+    const { winnerId, action } = await params;
 
     if (action === 'approve') {
       const { error } = await supabaseAdmin

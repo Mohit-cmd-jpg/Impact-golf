@@ -1,7 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
-import { sendPaymentConfirmationEmail } from '../../../lib/email-service';
+import { sendPaymentConfirmationEmail } from '@/lib/email-service';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 const supabase = createClient(
@@ -58,6 +58,7 @@ async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
     );
 
     // Update subscription status in database
+    const sub = subscription as any;
     await supabase.from('subscriptions').insert({
       user_id: userId,
       stripe_subscription_id: subscription.id,
@@ -65,8 +66,8 @@ async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
       status: 'active',
       plan: plan,
       charity_id: charityId,
-      current_period_start: new Date(subscription.current_period_start * 1000),
-      current_period_end: new Date(subscription.current_period_end * 1000),
+      current_period_start: new Date(sub.current_period_start * 1000),
+      current_period_end: new Date(sub.current_period_end * 1000),
     });
   } catch (error) {
     console.error('Error handling subscription.created:', error);
@@ -76,13 +77,14 @@ async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
 async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
   try {
     const newStatus = subscription.status === 'active' ? 'active' : 'inactive';
+    const sub = subscription as any;
 
     await supabase
       .from('subscriptions')
       .update({
         status: newStatus,
-        current_period_start: new Date(subscription.current_period_start * 1000),
-        current_period_end: new Date(subscription.current_period_end * 1000),
+        current_period_start: new Date(sub.current_period_start * 1000),
+        current_period_end: new Date(sub.current_period_end * 1000),
       })
       .eq('stripe_subscription_id', subscription.id);
   } catch (error) {

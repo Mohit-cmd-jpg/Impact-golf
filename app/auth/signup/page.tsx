@@ -1,16 +1,16 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useState, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams as useSearchParamsHook } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowRight, Mail, Lock, User, ChevronRight } from 'lucide-react';
 import { loadStripe } from '@stripe/stripe-js';
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || '');
 
-export default function SignupPage() {
+function SignupPageContent() {
   const router = useRouter();
-  const searchParams = useSearchParams();
+  const searchParams = useSearchParamsHook();
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -115,7 +115,8 @@ export default function SignupPage() {
 
       const stripe = await stripePromise;
       if (stripe && data.data.sessionId) {
-        await stripe.redirectToCheckout({ sessionId: data.data.sessionId });
+        // Redirect to Stripe Checkout
+        window.location.href = `https://checkout.stripe.com/pay/${data.data.sessionId}`;
       }
     } catch (err) {
       setError('An error occurred. Please try again.');
@@ -396,5 +397,13 @@ export default function SignupPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function SignupPage() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center min-h-screen">Loading...</div>}>
+      <SignupPageContent />
+    </Suspense>
   );
 }
