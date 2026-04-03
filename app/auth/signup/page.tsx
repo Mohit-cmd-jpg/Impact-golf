@@ -118,7 +118,9 @@ function SignupPageContent() {
       }
 
       const stripe = await stripePromise;
-      if (stripe && data.data.sessionId) {
+      if (data.data.sessionUrl) {
+        window.location.href = data.data.sessionUrl;
+      } else if (stripe && data.data.sessionId) {
         // Redirect to Stripe Checkout
         window.location.href = `https://checkout.stripe.com/pay/${data.data.sessionId}`;
       }

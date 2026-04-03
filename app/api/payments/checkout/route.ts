@@ -38,11 +38,13 @@ export async function POST(req: NextRequest) {
         .update({ subscription_status: 'active' })
         .eq('id', user.id)
 
+      const origin = req.headers.get('origin') || process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+
       return NextResponse.json({
         success: true,
         data: {
           sessionId: 'mock_session_123',
-          sessionUrl: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/dashboard?session_id=mock_session_123&mock_payment=true`,
+          sessionUrl: `${origin}/dashboard?session_id=mock_session_123&mock_payment=true`,
         },
       })
     }
@@ -121,11 +123,13 @@ export async function POST(req: NextRequest) {
         .update({ subscription_status: 'active' })
         .eq('id', user.id)
 
+      const origin = req.headers.get('origin') || process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+
       return NextResponse.json({
         success: true,
         data: {
           sessionId: 'mock_session_fallback',
-          sessionUrl: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/dashboard?session_id=mock_session_fallback&mock_payment=true`,
+          sessionUrl: `${origin}/dashboard?session_id=mock_session_fallback&mock_payment=true`,
         },
       })
     }
