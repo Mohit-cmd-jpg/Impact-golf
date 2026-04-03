@@ -8,45 +8,39 @@ const supabaseAdmin = createClient(
 
 export async function GET(request: NextRequest) {
   try {
-    // Get all winners with their details
     const { data: winners, error: winnersError } = await supabaseAdmin
       .from('winners')
       .select('*')
       .order('created_at', { ascending: false });
 
     if (winnersError) throw winnersError;
-
     if (!winners) return NextResponse.json([]);
 
-    // Get user and draw details for each winner
     const winnersWithDetails = await Promise.all(
       winners.map(async (winner) => {
         const { data: user } = await supabaseAdmin
           .from('users')
-          .select('full_name, email')
+          .select('name, email')
           .eq('id', winner.user_id)
           .single();
 
         const { data: draw } = await supabaseAdmin
           .from('draws')
-          .select('draw_date')
+          .select('month, year')
           .eq('id', winner.draw_id)
           .single();
 
+        const monthNames = ['', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
         return {
           id: winner.id,
-          name: user?.full_name || 'Unknown',
+          name: user?.name || 'Unknown',
           email: user?.email || 'unknown@example.com',
-          amount: `$${winner.prize_amount?.toLocaleString() || '0.00'} USD`,
-          matches: winner.matches || 0,
-          status: winner.status || 'pending',
-          drawDate: draw
-            ? new Date(draw.draw_date).toLocaleDateString('en-US', {
-                month: 'short',
-                day: 'numeric',
-                year: 'numeric',
-              })
-            : 'Unknown',
+          amount: `$${Number(winner.prize_amount || 0).toLocaleString()}`,
+          matches: winner.match_tier || 0,
+          status: winner.payment_status === 'paid' ? 'paid' : winner.verification_status === 'approved' ? 'approved' : 'pending',
+          drawDate: draw ? `${monthNames[draw.month]} ${draw.year}` : 'Unknown',
+          proofUrl: winner.proof_url || null,
         };
       })
     );

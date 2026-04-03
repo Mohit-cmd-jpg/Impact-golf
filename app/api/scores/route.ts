@@ -96,3 +96,98 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
+
+// PATCH: Edit an existing score
+export async function PATCH(req: NextRequest) {
+  try {
+    const { scoreId, score, datePlayed } = await req.json()
+
+    if (!scoreId) {
+      return NextResponse.json({ error: 'Score ID is required' }, { status: 400 })
+    }
+
+    if (score !== undefined && (typeof score !== 'number' || score < 1 || score > 45)) {
+      return NextResponse.json({ error: 'Score must be between 1 and 45' }, { status: 400 })
+    }
+
+    const authHeader = req.headers.get('Authorization')
+    if (!authHeader) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const token = authHeader.replace('Bearer ', '')
+    const supabase = createServerClient()
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser(token)
+
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const updateData: Record<string, any> = { updated_at: new Date().toISOString() }
+    if (score !== undefined) updateData.score = score
+    if (datePlayed) updateData.date_played = datePlayed
+
+    const { data: updatedScore, error } = await supabase
+      .from('scores')
+      .update(updateData)
+      .eq('id', scoreId)
+      .eq('user_id', user.id) // Ensure user owns this score
+      .select()
+      .single()
+
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 400 })
+    }
+
+    return NextResponse.json({ success: true, data: updatedScore })
+  } catch (err) {
+    console.error('Patch score error:', err)
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+  }
+}
+
+// DELETE: Remove a score
+export async function DELETE(req: NextRequest) {
+  try {
+    const { searchParams } = new URL(req.url)
+    const scoreId = searchParams.get('id')
+
+    if (!scoreId) {
+      return NextResponse.json({ error: 'Score ID is required' }, { status: 400 })
+    }
+
+    const authHeader = req.headers.get('Authorization')
+    if (!authHeader) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const token = authHeader.replace('Bearer ', '')
+    const supabase = createServerClient()
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser(token)
+
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const { error } = await supabase
+      .from('scores')
+      .delete()
+      .eq('id', scoreId)
+      .eq('user_id', user.id) // Ensure user owns this score
+
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 400 })
+    }
+
+    return NextResponse.json({ success: true })
+  } catch (err) {
+    console.error('Delete score error:', err)
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+  }
+}

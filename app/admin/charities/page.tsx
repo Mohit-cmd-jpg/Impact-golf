@@ -20,6 +20,36 @@ export default function AdminCharities() {
   const [loading, setLoading] = useState(true);
   const [showAddForm, setShowAddForm] = useState(false);
 
+  // Form state
+  const [formName, setFormName] = useState('');
+  const [formEmoji, setFormEmoji] = useState('');
+  const [formCategory, setFormCategory] = useState('Water');
+  const [formDescription, setFormDescription] = useState('');
+  const [formSubmitting, setFormSubmitting] = useState(false);
+
+  const handleCreateCharity = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setFormSubmitting(true);
+    try {
+      const res = await fetch('/api/admin/charities', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: formName, emoji: formEmoji, category: formCategory, description: formDescription }),
+      });
+      if (res.ok) {
+        setShowAddForm(false);
+        setFormName(''); setFormEmoji(''); setFormCategory('Water'); setFormDescription('');
+        // Refresh list
+        const refreshRes = await fetch('/api/admin/charities');
+        if (refreshRes.ok) setCharities(await refreshRes.json());
+      }
+    } catch (error) {
+      console.error('Error creating charity:', error);
+    } finally {
+      setFormSubmitting(false);
+    }
+  };
+
   useEffect(() => {
     const fetchCharities = async () => {
       try {
@@ -84,19 +114,19 @@ export default function AdminCharities() {
               Add New Charity
             </h3>
 
-            <form className="space-y-4">
+            <form onSubmit={handleCreateCharity} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant block mb-2">
                     Name
                   </label>
-                  <input type="text" placeholder="Charity name" className="w-full bg-surface-container-high border border-white/10 rounded-lg px-4 py-2 text-sm text-on-surface focus:ring-1 focus:ring-primary-container outline-none" />
+                  <input type="text" placeholder="Charity name" value={formName} onChange={(e) => setFormName(e.target.value)} required className="w-full bg-surface-container-high border border-white/10 rounded-lg px-4 py-2 text-sm text-on-surface focus:ring-1 focus:ring-primary-container outline-none" />
                 </div>
                 <div>
                   <label className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant block mb-2">
                     Emoji Icon
                   </label>
-                  <input type="text" placeholder="💧" className="w-full bg-surface-container-high border border-white/10 rounded-lg px-4 py-2 text-sm text-on-surface focus:ring-1 focus:ring-primary-container outline-none" />
+                  <input type="text" placeholder="💧" value={formEmoji} onChange={(e) => setFormEmoji(e.target.value)} className="w-full bg-surface-container-high border border-white/10 rounded-lg px-4 py-2 text-sm text-on-surface focus:ring-1 focus:ring-primary-container outline-none" />
                 </div>
               </div>
 
@@ -104,12 +134,11 @@ export default function AdminCharities() {
                 <label className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant block mb-2">
                   Category
                 </label>
-                <select className="w-full bg-surface-container-high border border-white/10 rounded-lg px-4 py-2 text-sm text-on-surface focus:ring-1 focus:ring-primary-container outline-none">
+                <select value={formCategory} onChange={(e) => setFormCategory(e.target.value)} className="w-full bg-surface-container-high border border-white/10 rounded-lg px-4 py-2 text-sm text-on-surface focus:ring-1 focus:ring-primary-container outline-none">
                   <option>Water</option>
                   <option>Education</option>
                   <option>Health</option>
                   <option>Reforestation</option>
-                  <option>Other</option>
                 </select>
               </div>
 
@@ -117,12 +146,12 @@ export default function AdminCharities() {
                 <label className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant block mb-2">
                   Description
                 </label>
-                <textarea placeholder="Describe the charity..." className="w-full bg-surface-container-high border border-white/10 rounded-lg px-4 py-2 text-sm text-on-surface focus:ring-1 focus:ring-primary-container outline-none resize-none h-20"></textarea>
+                <textarea placeholder="Describe the charity..." value={formDescription} onChange={(e) => setFormDescription(e.target.value)} required className="w-full bg-surface-container-high border border-white/10 rounded-lg px-4 py-2 text-sm text-on-surface focus:ring-1 focus:ring-primary-container outline-none resize-none h-20"></textarea>
               </div>
 
               <div className="flex gap-2 pt-4">
-                <button type="submit" className="flex-1 bg-primary-container text-on-primary-fixed py-2 rounded-full text-xs font-black uppercase tracking-widest shadow-neon transition-all hover:shadow-neon-lg">
-                  Create Charity
+                <button type="submit" disabled={formSubmitting} className="flex-1 bg-primary-container text-on-primary-fixed py-2 rounded-full text-xs font-black uppercase tracking-widest shadow-neon transition-all hover:shadow-neon-lg disabled:opacity-50">
+                  {formSubmitting ? 'Creating...' : 'Create Charity'}
                 </button>
                 <button type="button" onClick={() => setShowAddForm(false)} className="flex-1 bg-white/5 hover:bg-white/10 text-on-surface py-2 rounded-full text-xs font-bold uppercase tracking-widest transition-colors">
                   Cancel
