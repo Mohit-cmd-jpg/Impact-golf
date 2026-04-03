@@ -30,6 +30,25 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
+    // Check for mock mode (Assessment / Local Dev without Stripe keys)
+    if (!process.env.STRIPE_SECRET_KEY || !process.env.STRIPE_MONTHLY_PRICE_ID) {
+      console.log('Running in MOCK payment mode - NO STRIPE KEYS CONFIGURED')
+      
+      // Auto-activate the user subscription in DB directly since there is no Stripe webhook
+      await supabase
+        .from('users')
+        .update({ subscription_status: 'active' })
+        .eq('id', user.id)
+
+      return NextResponse.json({
+        success: true,
+        data: {
+          sessionId: 'mock_session_123',
+          sessionUrl: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/dashboard?session_id=mock_session_123&mock_payment=true`,
+        },
+      })
+    }
+
     // Get or create Stripe customer
     let stripeCustomerId: string
 
