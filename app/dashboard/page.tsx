@@ -13,6 +13,7 @@ interface UserProfile {
   subscription_renewal_date: string | null;
   charity_id: string | null;
   charity_contribution_percent: number;
+  role: string;
   charity?: { id: string; name: string; category: string; image_url?: string } | null;
   subscription?: { plan: string; status: string; amount: number } | null;
 }
@@ -230,6 +231,11 @@ export default function DashboardPage() {
             <span className="text-2xl font-black text-[#cafd00] tracking-tighter uppercase font-headline">IMPACT GOLF</span>
           </Link>
           <div className="flex items-center gap-4">
+            {profile?.role === 'admin' && (
+              <Link href="/admin" className="hidden sm:flex items-center gap-2 bg-[#cafd00] text-[#0e0e0e] px-4 py-1.5 rounded-full font-black text-[10px] uppercase tracking-widest hover:shadow-neon transition-all">
+                Admin Portal <span className="material-symbols-outlined text-sm">settings</span>
+              </Link>
+            )}
             <span className="text-sm text-on-surface-variant font-bold hidden md:block">{profile?.email}</span>
             <button onClick={handleLogout} className="text-xs text-red-400 hover:text-red-300 font-bold uppercase tracking-widest transition-colors">
               Logout
@@ -266,6 +272,17 @@ export default function DashboardPage() {
                   {tab.label}
                 </button>
               ))}
+
+              {profile?.role === 'admin' && (
+                <Link
+                  href="/admin"
+                  className="flex items-center gap-4 px-4 py-3 rounded-md font-headline font-bold text-sm tracking-widest transition-colors text-left w-full bg-white/5 text-[#cafd00] border border-white/10 hover:border-[#cafd00]/30 hover:bg-[#cafd00]/5"
+                >
+                  <span className="material-symbols-outlined shrink-0">admin_panel_settings</span>
+                  ADMIN PORTAL
+                </Link>
+              )}
+
               <button onClick={handleLogout} className="flex items-center gap-4 px-4 py-3 mt-6 rounded-md text-red-400 hover:text-red-300 hover:bg-red-500/10 font-headline font-bold text-sm tracking-widest transition-colors w-full text-left">
                 <span className="material-symbols-outlined shrink-0">logout</span> LOGOUT
               </button>
