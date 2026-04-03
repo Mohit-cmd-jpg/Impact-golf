@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
       .from('users')
       .update({
         subscription_status: 'expired',
-        subscription_plan: 'none',
+        subscription_plan: null,
         subscription_renewal_date: null
       })
       .eq('id', authUser.id)
