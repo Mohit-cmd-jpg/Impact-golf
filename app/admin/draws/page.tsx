@@ -22,7 +22,11 @@ export default function AdminDraws() {
   useEffect(() => {
     const fetchDraws = async () => {
       try {
-        const response = await fetch('/api/admin/draws');
+        const response = await fetch('/api/admin/draws', {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+          }
+        });
         if (response.ok) {
           const data = await response.json();
           setDraws(data);
@@ -42,6 +46,9 @@ export default function AdminDraws() {
     try {
       const response = await fetch('/api/admin/draws/simulate', {
         method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+        }
       });
       if (response.ok) {
         // Refresh draws
@@ -61,6 +68,9 @@ export default function AdminDraws() {
     try {
       const response = await fetch(`/api/admin/draws/${drawId}/publish`, {
         method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+        }
       });
       if (response.ok) {
         setDraws((prev) =>

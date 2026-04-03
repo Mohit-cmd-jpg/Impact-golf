@@ -34,11 +34,11 @@ export async function GET(request: NextRequest) {
         return {
           id: charity.id,
           name: charity.name,
-          emoji: charity.emoji || '🎁',
+          emoji: '🎁', // Default since column missing
           category: charity.category,
           description: charity.description,
           totalRaised,
-          status: charity.verified ? 'Active' : 'Verification Pending',
+          status: charity.is_featured ? 'Featured' : 'Active',
           progress: Math.min(Math.floor((totalRaised / 100000) * 100), 100),
         };
       })

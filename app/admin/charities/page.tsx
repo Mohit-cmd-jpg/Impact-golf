@@ -33,14 +33,21 @@ export default function AdminCharities() {
     try {
       const res = await fetch('/api/admin/charities', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+        },
         body: JSON.stringify({ name: formName, emoji: formEmoji, category: formCategory, description: formDescription }),
       });
       if (res.ok) {
         setShowAddForm(false);
         setFormName(''); setFormEmoji(''); setFormCategory('Water'); setFormDescription('');
         // Refresh list
-        const refreshRes = await fetch('/api/admin/charities');
+        const refreshRes = await fetch('/api/admin/charities', {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+          }
+        });
         if (refreshRes.ok) setCharities(await refreshRes.json());
       }
     } catch (error) {
@@ -53,7 +60,11 @@ export default function AdminCharities() {
   useEffect(() => {
     const fetchCharities = async () => {
       try {
-        const response = await fetch('/api/admin/charities');
+        const response = await fetch('/api/admin/charities', {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+          }
+        });
         if (response.ok) {
           const data = await response.json();
           setCharities(data);
@@ -73,6 +84,9 @@ export default function AdminCharities() {
       try {
         const response = await fetch(`/api/admin/charities/${charityId}`, {
           method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+          }
         });
         if (response.ok) {
           setCharities((prev) => prev.filter((c) => c.id !== charityId));

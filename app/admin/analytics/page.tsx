@@ -23,7 +23,11 @@ export default function AdminAnalytics() {
   useEffect(() => {
     const fetchAnalytics = async () => {
       try {
-        const response = await fetch(`/api/admin/analytics?range=${dateRange}`);
+        const response = await fetch(`/api/admin/analytics?range=${dateRange}`, {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+          }
+        });
         if (response.ok) {
           const analyticsData = await response.json();
           setData(analyticsData);
