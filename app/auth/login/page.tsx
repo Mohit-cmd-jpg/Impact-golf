@@ -33,6 +33,9 @@ export default function LoginPage() {
 
       // Store session token
       localStorage.setItem('authToken', data.data.session.access_token);
+      // Set cookie for middleware to read
+      document.cookie = `auth-token=${data.data.session.access_token}; path=/; max-age=86400; SameSite=Lax`;
+      
       router.push('/dashboard');
     } catch (err) {
       setError('An error occurred. Please try again.');

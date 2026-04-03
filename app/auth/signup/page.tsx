@@ -61,6 +61,8 @@ function SignupPageContent() {
 
       if (data.data?.session?.access_token) {
         localStorage.setItem('authToken', data.data.session.access_token);
+        // Set cookie for middleware to read
+        document.cookie = `auth-token=${data.data.session.access_token}; path=/; max-age=86400; SameSite=Lax`;
       }
 
       setStep(2);
