@@ -62,6 +62,10 @@ function SignupPageContent() {
         return;
       }
 
+      if (data.data?.session?.access_token) {
+        localStorage.setItem('authToken', data.data.session.access_token);
+      }
+
       setStep(2);
     } catch (err) {
       setError('An error occurred. Please try again.');

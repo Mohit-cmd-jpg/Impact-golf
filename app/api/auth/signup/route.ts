@@ -46,6 +46,7 @@ export async function POST(req: NextRequest) {
       success: true,
       data: {
         user: authData.user,
+        session: authData.session,
         message: 'Signup successful! Please check your email to confirm your account.',
       },
     })
