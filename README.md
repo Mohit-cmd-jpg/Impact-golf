@@ -173,8 +173,9 @@ npm run dev
 Visit **http://localhost:3000**
 
 ### Test Credentials
-- **Stripe:** `4242 4242 4242 4242` (any future date, any CVC)
+- **Admin:** `mohitbindal106@gmail.com` / `12345678`
 - **User:** `test@example.com` / `TestPassword123!`
+- **Stripe:** `4242 4242 4242 4242` (any future date, any CVC)
 
 ---
 
@@ -202,20 +203,16 @@ See [DEPLOYMENT.md](./DEPLOYMENT.md) for full setup guide.
 
 **Build Status:** ✅ **100% COMPLETE** — **PRODUCTION READY**
 
+## 📋 PRD Compliance Checklist
+✅ Emotional, modern UI/UX with micro-animations
+✅ Standard Signup / Login Flow
+✅ Two-tier Subscription System (Monthly/Yearly via Stripe)
+✅ 5-Score Rolling Logic for Draw Eligibility
+✅ Algorithmic Draw Engine (True Random & Tier-Weighted)
+✅ Charity Selection & Directory
+✅ Winner Verification & Payout Tracking
+✅ User Dashboard & Admin Dashboard
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+**Built with Next.js 14, Supabase, TailwindCSS, and Stripe.**
