@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { Stripe } from 'stripe'
 import { createServerClient } from '@/lib/supabase'
-
+import { createClient } from '@supabase/supabase-js'
 export async function POST(req: NextRequest) {
   try {
     const { plan, charityId, charityContributionPercent } = await req.json()
@@ -33,7 +33,6 @@ export async function POST(req: NextRequest) {
       console.log('Running in MOCK payment mode - NO STRIPE KEYS CONFIGURED')
       
       // Auto-activate the user subscription in DB directly since there is no Stripe webhook
-      const { createClient } = require('@supabase/supabase-js')
       const supabaseAdmin = createClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
         process.env.SUPABASE_SERVICE_ROLE_KEY!
