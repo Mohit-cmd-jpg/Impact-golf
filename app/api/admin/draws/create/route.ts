@@ -1,7 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { NextRequest, NextResponse } from 'next/server';
 
-const supabaseAdmin = createClient(
+const getSupabaseAdmin = () => createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
     const year = now.getFullYear();
 
     // Check if a draw already exists for this month
-    const { data: existing } = await supabaseAdmin
+    const { data: existing } = await getSupabaseAdmin()
       .from('draws')
       .select('id, status')
       .eq('month', month)
@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Create new draft draw
-    const { data: newDraw, error } = await supabaseAdmin
+    const { data: newDraw, error } = await getSupabaseAdmin()
       .from('draws')
       .insert({
         month,

@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -83,7 +84,7 @@ export default function HomePage() {
         <section className="relative min-h-[90vh] flex items-center px-6 overflow-hidden">
           <div className="absolute inset-0 z-0">
             <div className="absolute inset-0 bg-gradient-to-r from-surface via-surface/80 to-transparent z-10" />
-            <img alt="Golf course aerial view" className="w-full h-full object-cover opacity-30" src="https://images.unsplash.com/photo-1587321528643-9836371dc110?q=80&w=2070" />
+            <Image alt="Golf course aerial view" src="https://images.unsplash.com/photo-1587321528643-9836371dc110?q=80&w=2070" fill className="object-cover opacity-30" sizes="(max-width: 768px) 100vw, 100vw" />
           </div>
           <div className="absolute top-1/4 right-0 w-[600px] h-[600px] bg-[#cafd00]/5 rounded-full blur-[150px]" />
           <div className="relative z-20 max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-12 items-center pt-24">

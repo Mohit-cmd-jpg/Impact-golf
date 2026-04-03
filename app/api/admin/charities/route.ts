@@ -1,14 +1,14 @@
 import { createClient } from '@supabase/supabase-js';
 import { NextRequest, NextResponse } from 'next/server';
 
-const supabaseAdmin = createClient(
+const getSupabaseAdmin = () => createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
 export async function GET(request: NextRequest) {
   try {
-    const { data: charities, error } = await supabaseAdmin
+    const { data: charities, error } = await getSupabaseAdmin()
       .from('charities')
       .select('*')
       .order('created_at', { ascending: false });
@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
     // Get total raised for each charity
     const charitiesWithRaised = await Promise.all(
       charities.map(async (charity) => {
-        const { data: recipients, error: recipientError } = await supabaseAdmin
+        const { data: recipients, error: recipientError } = await getSupabaseAdmin()
           .from('subscriptions')
           .select('monthly_contribution_amount')
           .eq('charity_id', charity.id)
@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
 
-    const { error } = await supabaseAdmin.from('charities').insert({
+    const { error } = await getSupabaseAdmin().from('charities').insert({
       name: body.name,
       emoji: body.emoji,
       category: body.category,

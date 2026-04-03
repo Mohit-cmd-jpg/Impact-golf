@@ -1,7 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { NextRequest, NextResponse } from 'next/server';
 
-const supabaseAdmin = createClient(
+const getSupabaseAdmin = () => createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Verify the draw exists and is in a publishable state
-    const { data: draw, error: fetchError } = await supabaseAdmin
+    const { data: draw, error: fetchError } = await getSupabaseAdmin()
       .from('draws')
       .select('*')
       .eq('id', drawId)
@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Update status to published
-    const { error: updateError } = await supabaseAdmin
+    const { error: updateError } = await getSupabaseAdmin()
       .from('draws')
       .update({
         status: 'published',

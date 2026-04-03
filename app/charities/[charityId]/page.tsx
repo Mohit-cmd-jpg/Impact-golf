@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useParams } from 'next/navigation';
 
 interface Charity {
@@ -112,7 +113,9 @@ export default function CharityDetailPage() {
           <h2 className="font-headline font-black text-lg uppercase tracking-tight mb-4">About This Charity</h2>
           <p className="text-on-surface-variant leading-relaxed text-base">{charity.description}</p>
           {charity.image_url && (
-            <img src={charity.image_url} alt={charity.name} className="w-full h-64 object-cover rounded-xl mt-6" />
+            <div className="relative w-full h-64 mt-6 rounded-xl overflow-hidden">
+              <Image src={charity.image_url} alt={charity.name} fill className="object-cover" sizes="(max-width: 768px) 100vw, (max-width: 1200px) 90vw, 80vw" />
+            </div>
           )}
         </section>
 

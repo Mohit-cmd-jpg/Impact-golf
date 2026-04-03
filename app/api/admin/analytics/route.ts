@@ -1,13 +1,15 @@
 import { createClient } from '@supabase/supabase-js';
 import { NextRequest, NextResponse } from 'next/server';
 
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
   try {
+    const getSupabaseAdmin = () => createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    );
+
     const range = request.nextUrl.searchParams.get('range') || '30d';
 
     // Calculate date range
@@ -32,12 +34,12 @@ export async function GET(request: NextRequest) {
     const startISO = startDate.toISOString();
 
     // Get total users (all time)
-    const { count: totalUsersCount } = await supabaseAdmin
+    const { count: totalUsersCount } = await getSupabaseAdmin()
       .from('users')
       .select('*', { count: 'exact', head: true });
 
     // Get active subscriptions (filtered by date range — created within range)
-    const { data: subscriptions } = await supabaseAdmin
+    const { data: subscriptions } = await getSupabaseAdmin()
       .from('subscriptions')
       .select('monthly_contribution_amount, plan, amount, created_at')
       .eq('status', 'active');
@@ -80,7 +82,7 @@ export async function GET(request: NextRequest) {
       const monthStart = new Date(monthDate.getFullYear(), monthDate.getMonth(), 1);
       const monthEnd = new Date(monthDate.getFullYear(), monthDate.getMonth() + 1, 0, 23, 59, 59);
 
-      const { count: monthlyUsers } = await supabaseAdmin
+      const { count: monthlyUsers } = await getSupabaseAdmin()
         .from('users')
         .select('*', { count: 'exact', head: true })
         .gte('created_at', monthStart.toISOString())
@@ -109,14 +111,14 @@ export async function GET(request: NextRequest) {
     };
 
     // Get top charities with donation aggregation
-    const { data: charities } = await supabaseAdmin
+    const { data: charities } = await getSupabaseAdmin()
       .from('charities')
       .select('id, name')
       .limit(5);
 
     const topCharities = await Promise.all(
       (charities || []).map(async (charity) => {
-        const { data: charitySubscriptions } = await supabaseAdmin
+        const { data: charitySubscriptions } = await getSupabaseAdmin()
           .from('subscriptions')
           .select('monthly_contribution_amount')
           .eq('charity_id', charity.id)

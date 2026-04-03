@@ -1,7 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
 import { NextRequest, NextResponse } from 'next/server'
 
-const supabaseAdmin = createClient(
+const getSupabaseAdmin = () => createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 )
@@ -9,7 +9,7 @@ const supabaseAdmin = createClient(
 export async function GET(req: NextRequest) {
   try {
     // 1. Fetch all draws
-    const { data: draws, error: drawError } = await supabaseAdmin
+    const { data: draws, error: drawError } = await getSupabaseAdmin()
       .from('draws')
       .select('*')
       .order('year', { ascending: false })
@@ -20,19 +20,19 @@ export async function GET(req: NextRequest) {
     // 2. Aggregate data for each draw
     const drawsWithStats = await Promise.all((draws || []).map(async (draw) => {
       // Get entry count
-      const { count: entries } = await supabaseAdmin
+      const { count: entries } = await getSupabaseAdmin()
         .from('draw_entries')
         .select('*', { count: 'exact', head: true })
         .eq('draw_id', draw.id);
 
       // Get winner count
-      const { count: winners } = await supabaseAdmin
+      const { count: winners } = await getSupabaseAdmin()
         .from('winners')
         .select('*', { count: 'exact', head: true })
         .eq('draw_id', draw.id);
 
       // Get prize pool sum
-      const { data: prizes } = await supabaseAdmin
+      const { data: prizes } = await getSupabaseAdmin()
         .from('prizes')
         .select('pool_amount')
         .eq('draw_id', draw.id);

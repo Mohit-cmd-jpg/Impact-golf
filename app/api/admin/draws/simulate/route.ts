@@ -1,7 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
 import { NextRequest, NextResponse } from 'next/server'
 
-const supabaseAdmin = createClient(
+const getSupabaseAdmin = () => createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 )
@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
     }
 
     // 1. Get the current draft draw
-    const { data: draw, error: fetchError } = await supabaseAdmin
+    const { data: draw, error: fetchError } = await getSupabaseAdmin()
       .from('draws')
       .select('id')
       .eq('status', 'draft')
@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
     winningNumbers.sort((a, b) => a - b);
 
     // 3. Update the draw status, type, and numbers
-    const { error: updateError } = await supabaseAdmin
+    const { error: updateError } = await getSupabaseAdmin()
       .from('draws')
       .update({
         status: 'simulated',
@@ -52,7 +52,7 @@ export async function POST(req: NextRequest) {
     if (updateError) throw updateError;
 
     // 4. Create mock winners for this draw
-    const { data: users } = await supabaseAdmin.from('users').select('id').limit(3);
+    const { data: users } = await getSupabaseAdmin().from('users').select('id').limit(3);
     if (users && users.length > 0) {
       const winners = users.map(u => ({
         draw_id: draw.id,
@@ -63,7 +63,7 @@ export async function POST(req: NextRequest) {
         payment_status: 'pending'
       }));
       
-      await supabaseAdmin.from('winners').insert(winners);
+      await getSupabaseAdmin().from('winners').insert(winners);
     }
 
     return NextResponse.json({

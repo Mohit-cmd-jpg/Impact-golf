@@ -1,7 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { NextRequest, NextResponse } from 'next/server';
 
-const supabaseAdmin = createClient(
+const getSupabaseAdmin = () => createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
@@ -14,7 +14,7 @@ export async function DELETE(
     const { userId } = await params;
 
     // Delete user and all associated data (cascading)
-    const { error } = await supabaseAdmin.from('users').delete().eq('id', userId);
+    const { error } = await getSupabaseAdmin().from('users').delete().eq('id', userId);
 
     if (error) throw error;
 

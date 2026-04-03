@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
-const supabase = createClient(
+const getSupabase = () => createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
@@ -9,9 +9,9 @@ const supabase = createClient(
 async function verifyAdmin(req: NextRequest) {
   const token = req.headers.get('Authorization')?.replace('Bearer ', '');
   if (!token) return null;
-  const { data: { user } } = await supabase.auth.getUser(token);
+  const { data: { user } } = await getSupabase().auth.getUser(token);
   if (!user) return null;
-  const { data } = await supabase.from('users').select('role').eq('id', user.id).single();
+  const { data } = await getSupabase().from('users').select('role').eq('id', user.id).single();
   return data?.role === 'admin' ? user : null;
 }
 
@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
 
   try {
     // Get the latest draft/simulated draw
-    const { data: draw } = await supabase
+    const { data: draw } = await getSupabase()
       .from('draws')
       .select('*')
       .in('status', ['draft', 'simulated'])
@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
       const month = now.getMonth() + 1;
       const year = now.getFullYear();
 
-      const { data: newDraw, error } = await supabase
+      const { data: newDraw, error } = await getSupabase()
         .from('draws')
         .insert({
           month,
@@ -63,7 +63,7 @@ export async function POST(req: NextRequest) {
       const winningNumbers = Array.from(nums).sort((a, b) => a - b);
 
       // Update draw
-      await supabase
+      await getSupabase()
         .from('draws')
         .update({ winning_numbers: winningNumbers, status: 'simulated' })
         .eq('id', newDraw.id);
@@ -81,7 +81,7 @@ export async function POST(req: NextRequest) {
     }
     const winningNumbers = Array.from(nums).sort((a, b) => a - b);
 
-    await supabase
+    await getSupabase()
       .from('draws')
       .update({ winning_numbers: winningNumbers, status: 'simulated' })
       .eq('id', draw.id);

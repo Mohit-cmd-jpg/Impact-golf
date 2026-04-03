@@ -1,7 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { NextRequest, NextResponse } from 'next/server';
 
-const supabaseAdmin = createClient(
+const getSupabaseAdmin = () => createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
     }
 
-    const { data: scores, error } = await supabaseAdmin
+    const { data: scores, error } = await getSupabaseAdmin()
       .from('scores')
       .select('*')
       .eq('user_id', userId)
@@ -43,7 +43,7 @@ export async function PATCH(request: NextRequest) {
       return NextResponse.json({ error: 'Score must be between 1 and 45' }, { status: 400 });
     }
 
-    const { data: updatedScore, error } = await supabaseAdmin
+    const { data: updatedScore, error } = await getSupabaseAdmin()
       .from('scores')
       .update({ score, updated_at: new Date().toISOString() })
       .eq('id', scoreId)

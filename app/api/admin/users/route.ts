@@ -1,14 +1,14 @@
 import { createClient } from '@supabase/supabase-js';
 import { NextRequest, NextResponse } from 'next/server';
 
-const supabaseAdmin = createClient(
+const getSupabaseAdmin = () => createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
 export async function GET(request: NextRequest) {
   try {
-    const { data: users, error: usersError } = await supabaseAdmin
+    const { data: users, error: usersError } = await getSupabaseAdmin()
       .from('users')
       .select('*, charities(name)')
       .order('created_at', { ascending: false });
@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
 
     const usersWithScores = await Promise.all(
       users.map(async (user) => {
-        const { count } = await supabaseAdmin
+        const { count } = await getSupabaseAdmin()
           .from('scores')
           .select('*', { count: 'exact', head: true })
           .eq('user_id', user.id);
